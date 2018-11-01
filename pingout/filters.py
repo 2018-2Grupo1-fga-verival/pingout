@@ -4,7 +4,7 @@ import pandas
 
 def filter_pingout_all_pings(uuid, collection):
     pings = collection.find_one({'uuid': uuid})['pings']
-
+    print("EU ESTOU AQUII", prings)
     return pings
 
 
@@ -13,7 +13,8 @@ def filter_pings_of_date(uuid, collection, date):
     """ Filter all pings of a given date, which must be an
     instance of datetime """
 
-    # Esse código permite o uso da data como string
+    # O código permitiria o uso da data como string
+
     # try:
     #     datetime.datetime.strptime(date,'%Y-%m-%d')
     # except ValueError:
