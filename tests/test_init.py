@@ -58,3 +58,12 @@ def test_ping_uuid_not_in_database(client, db_collection):
     response = client.post(url)
     assert response.status_code == 404
     assert response.json['errors'] == 'Pingout not found'
+
+def test_ping_bad_format_uuid(client):
+    """ Test request method ping
+    É testado o caso que a uuid não é valida, ie, está um formato inválido"""
+    uuid = str(uuid4())
+    url = '/' + uuid + '/ping'
+    response = client.post(url)
+    assert response.status_code == 400
+    assert response.json['errors'] == 'Bad format uuid'
