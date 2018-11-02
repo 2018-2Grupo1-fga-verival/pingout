@@ -1,4 +1,5 @@
 import pytest
+from uuid import uuid4
 from flask import Response
 
 def test_create_pingout(client):
@@ -31,7 +32,38 @@ def test_ping_valid_uuid(client, db_collection):
     url = '/' + uuid + '/ping'
     response_ping = client.post(url)
     ping = db_collection.find_one(({'uuid': uuid}))
-    print(ping)
     assert ping['uuid'] == uuid
-    assert ping['pings'][0]['count'] == 1
+    assert len(ping['pings']) == 1
     assert response_ping.status_code == 201
+
+def test_ping_greater_than_one(client, db_collection):
+    """ Test request method ping
+    É testado o caso em que a uuid é válida e há dois pings anteriores"""
+    response = client.post('/create-pingout')
+    uuid = response.json['uuid']
+    url = '/' + uuid + '/ping'
+    for count_ping in range(2):
+        response_ping = client.post(url)
+        ping = db_collection.find_one(({'uuid': uuid}))
+        assert ping['uuid'] == uuid
+        assert len(ping['pings']) == count_ping + 1
+        assert response_ping.status_code == 201
+
+def test_ping_uuid_not_in_database(client, db_collection):
+    """ Test request method ping
+    É testado o caso em que a uuid é válida mas não está no banco de dados"""
+    uuid = uuid4().hex
+    db_collection.delete_many(({'uuid': uuid}))
+    url = '/' + uuid + '/ping'
+    response = client.post(url)
+    assert response.status_code == 404
+    assert response.json['errors'] == 'Pingout not found'
+
+def test_ping_bad_format_uuid(client):
+    """ Test request method ping
+    É testado o caso que a uuid não é valida, ie, está um formato inválido"""
+    uuid = str(uuid4())
+    url = '/' + uuid + '/ping'
+    response = client.post(url)
+    assert response.status_code == 400
+    assert response.json['errors'] == 'Bad format uuid'
