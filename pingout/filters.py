@@ -3,8 +3,9 @@ import pandas
 
 
 def filter_pingout_all_pings(uuid, collection):
-    pings = collection.find_one({'uuid': uuid})['pings']
 
+    pings = collection.find_one({"uuid": uuid})#['pings']
+    # print("EU ESTOU AQUII", pings)
     return pings
 
 
@@ -13,13 +14,18 @@ def filter_pings_of_date(uuid, collection, date):
     """ Filter all pings of a given date, which must be an
     instance of datetime """
 
+    # O código permitiria o uso da data como string
+
+    # try:
+    #     datetime.datetime.strptime(date,'%Y-%m-%d')
+    # except ValueError:
+    #     raise ValueError("Invalid date type")
+
     if not isinstance(date, datetime.datetime):
-        raise ValueError('Invalid date type')
+       raise ValueError('Invalid date type')
 
     pings = filter_pingout_all_pings(uuid, collection)
-
     pings_data = [ping for ping in pings if ping['date'] == date]
-
     return pings_data
 
 
@@ -33,10 +39,12 @@ def filter_pings_range_of_dates(uuid, collection, initial, final):
     pings = filter_pingout_all_pings(uuid, collection)
     pings_range = []
 
-    for ping in pings:
-        if ping['date'].date() >= initial.date() and ping['date'].date() <= final.date():
-            ping['date'] = ping['date'].date()
-            pings_range.append(ping)
+    # Caso não existam pings no período, uma lista vazia é retornada
+    if pings:
+        for ping in pings:
+            if ping['date'].date() >= initial.date() and ping['date'].date() <= final.date():
+                ping['date'] = ping['date'].date()
+                pings_range.append(ping)
 
     return pings_range
 
