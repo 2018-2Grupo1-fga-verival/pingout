@@ -3,8 +3,9 @@ import pandas
 
 
 def filter_pingout_all_pings(uuid, collection):
-    pings = collection.find_one({'uuid': uuid})['pings']
-    print("EU ESTOU AQUII", prings)
+
+    pings = collection.find_one({"uuid": uuid})#['pings']
+    # print("EU ESTOU AQUII", pings)
     return pings
 
 
@@ -38,10 +39,12 @@ def filter_pings_range_of_dates(uuid, collection, initial, final):
     pings = filter_pingout_all_pings(uuid, collection)
     pings_range = []
 
-    for ping in pings:
-        if ping['date'].date() >= initial.date() and ping['date'].date() <= final.date():
-            ping['date'] = ping['date'].date()
-            pings_range.append(ping)
+    # Caso não existam pings no período, uma lista vazia é retornada
+    if pings:
+        for ping in pings:
+            if ping['date'].date() >= initial.date() and ping['date'].date() <= final.date():
+                ping['date'] = ping['date'].date()
+                pings_range.append(ping)
 
     return pings_range
 
