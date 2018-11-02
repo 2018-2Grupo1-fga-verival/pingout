@@ -1,4 +1,5 @@
 import pytest
+from uuid import uuid4
 from flask import Response
 
 def test_create_pingout(client):
@@ -47,3 +48,13 @@ def test_ping_greater_than_one(client, db_collection):
         assert ping['uuid'] == uuid
         assert len(ping['pings']) == count_ping + 1
         assert response_ping.status_code == 201
+
+def test_ping_uuid_not_in_database(client, db_collection):
+    """ Test request method ping
+    É testado o caso em que a uuid é válida mas não está no banco de dados"""
+    uuid = uuid4().hex
+    db_collection.delete_many(({'uuid': uuid}))
+    url = '/' + uuid + '/ping'
+    response = client.post(url)
+    assert response.status_code == 404
+    assert response.json['errors'] == 'Pingout not found'
