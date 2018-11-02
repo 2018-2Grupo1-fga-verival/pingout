@@ -31,7 +31,19 @@ def test_ping_valid_uuid(client, db_collection):
     url = '/' + uuid + '/ping'
     response_ping = client.post(url)
     ping = db_collection.find_one(({'uuid': uuid}))
-    print(ping)
     assert ping['uuid'] == uuid
-    assert ping['pings'][0]['count'] == 1
+    assert len(ping['pings']) == 1
     assert response_ping.status_code == 201
+
+def test_ping_greater_than_one(client, db_collection):
+    """ Test request method ping
+    É testado o caso em que a uuid é válida e há dois pings anteriores"""
+    response = client.post('/create-pingout')
+    uuid = response.json['uuid']
+    url = '/' + uuid + '/ping'
+    for count_ping in range(2):
+        response_ping = client.post(url)
+        ping = db_collection.find_one(({'uuid': uuid}))
+        assert ping['uuid'] == uuid
+        assert len(ping['pings']) == count_ping + 1
+        assert response_ping.status_code == 201
