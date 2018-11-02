@@ -50,7 +50,7 @@ def test_filter_pings_range_of_dates_check_types():
 
 def test_filter_occurrences_ping_range_date():
 
-    
+
     uuid = '13667dae53c84f13872ed4295347783e'
     collection =  connect_to_collection(connect_to_database())
 
@@ -59,11 +59,26 @@ def test_filter_occurrences_ping_range_date():
     right_final = datetime.datetime.now()
 
     wrong_initial = '2018-10-02'
-    wrong_final = '2018-10-02' 
-    
+    wrong_final = '2018-10-02'
+
     with py.raises(ValueError):
         # filter_occurrences_ping_range_date(uuid, collection, right_initial, right_final)
         filter_occurrences_ping_range_date(uuid, collection, wrong_initial, right_final)
         filter_occurrences_ping_range_date(uuid, collection, right_initial, wrong_final)
         filter_occurrences_ping_range_date(uuid, collection, wrong_initial, wrong_final)
 
+
+def test_filter_pings_range_of_dates():
+    """Check ping with range of dates
+
+        Como o anterior, não aceita data no formato string
+    """
+
+    right_initial = datetime.datetime.now() - datetime.timedelta(days=1, hours=3)
+    right_final = datetime.datetime.now()
+
+    uuid = '13667dae53c84f13872ed4295347783e'
+    collection =  connect_to_collection(connect_to_database())
+
+    result = filter_pings_range_of_dates(uuid, collection, right_initial, right_final)
+    assert result != None
