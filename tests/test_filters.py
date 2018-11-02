@@ -1,5 +1,7 @@
 from pingout.db import connect_to_database
 from pingout.db import connect_to_collection
+from flask import request
+
 from pingout.filters import *
 import pytest as py
 import datetime
@@ -45,3 +47,23 @@ def test_filter_pings_range_of_dates_check_types():
         filter_pings_range_of_dates(uuid, collection, wrong_initial, right_final)
         filter_pings_range_of_dates(uuid, collection, right_initial, wrong_final)
         filter_pings_range_of_dates(uuid, collection, wrong_initial, wrong_final)
+
+def test_filter_occurrences_ping_range_date():
+
+    
+    uuid = '13667dae53c84f13872ed4295347783e'
+    collection =  connect_to_collection(connect_to_database())
+
+    right_initial = datetime.datetime.now()
+    time.sleep(1)
+    right_final = datetime.datetime.now()
+
+    wrong_initial = '2018-10-02'
+    wrong_final = '2018-10-02' 
+    
+    with py.raises(ValueError):
+        # filter_occurrences_ping_range_date(uuid, collection, right_initial, right_final)
+        filter_occurrences_ping_range_date(uuid, collection, wrong_initial, right_final)
+        filter_occurrences_ping_range_date(uuid, collection, right_initial, wrong_final)
+        filter_occurrences_ping_range_date(uuid, collection, wrong_initial, wrong_final)
+
